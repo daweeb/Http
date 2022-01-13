@@ -97,8 +97,6 @@ class UriTest extends TestCase
         $this->assertEquals($uri->getHost(), 'groupware');
     }
 
-    //  no exception thrown?
-    //  @throws \InvalidArgumentException for invalid hostnames.
     public function testWithInvalidHost()
     {
         $host = 'group@ware';
@@ -115,13 +113,70 @@ class UriTest extends TestCase
         $this->assertEquals($uri->getHost(), null);
     }
 
-    public function testWithFragment()
+    public function testWithPathRemovesFragmentString()
     {
         $path = '/hello/world';
         $fragment = '#print';
         $uri = new Uri();
         $uri = $uri->withPath($path . $fragment);
-        $this->assertEquals($fragment->getFragment(),$fragment);
+        $this->assertEquals($uri->getPath(), $path);
+    }
+
+    public function testWithfragmentString()
+    {
+        $fragment = 'print';
+        $uri = new Uri();
+        $uri = $uri->withFragment($fragment);
+        $this->assertEquals($uri->getFragment(), $fragment);
+    }
+
+    public function testWithEmpytFragmentString()
+    {
+        $fragment = '';
+        $uri = new Uri();
+        $uri = $uri->withFragment($fragment);
+        $this->assertEquals($uri->getFragment(), null);
+    }
+
+    public function testWithUserInfoValid()
+    {
+        $uri = new Uri();
+        $user = 'test';
+        $pass = '1234';
+        $uri = $uri->withUserInfo($user, $pass);
+        $this->assertEquals($uri->getUserInfo(), 'test:1234');
+    }
+
+
+    public function testWithUserInfoValidEmptyPass()
+    {
+        $uri = new Uri();
+        $user = 'test';
+        $uri = $uri->withUserInfo($user,'');
+        $this->assertEquals($uri->getUserInfo(), $user);
+    }
+
+    public function testWithSchemeValidLower()
+    {
+        $uri = new Uri();
+        $scheme ="feed";
+        $uri = $uri->withScheme($scheme);
+        $this->assertEquals($uri->getScheme(), $scheme);
+    }
+
+    public function testWithSchemeValidUpper()
+    {
+        $uri = new Uri();
+        $scheme ="FeEd";
+        $uri = $uri->withScheme($scheme);
+        $this->assertEquals($uri->getScheme(), 'feed');
+    }
+
+    public function testWithSchemeEmpty()
+    {
+        $uri = new Uri();
+        $scheme ="";
+        $uri = $uri->withScheme($scheme);
+        $this->assertEquals($uri->getScheme(), null);
     }
 }
-
