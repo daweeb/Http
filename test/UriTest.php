@@ -2,6 +2,7 @@
 
 namespace Horde\Http\Test;
 
+use AssertionError;
 use Phpunit\Framework\TestCase;
 use Horde\Http\RequestFactory;
 use Horde\Http\ServerRequest;
@@ -58,12 +59,8 @@ class UriTest extends TestCase
         $port = '56564';
         $uri = new Uri();
         $uri = $uri->withPort($port);
-        $this->assertEquals($uri->getPort(),$port);
+        $this->assertEquals($uri->getPort(), $port);
     }
-
-    /** Port outside port range 1-65535 InvalidArgumentException expected.
-     * No error is thrown?
-     */ 
 
     public function testWithInvalidPort()
     {
@@ -152,14 +149,14 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $user = 'test';
-        $uri = $uri->withUserInfo($user,'');
+        $uri = $uri->withUserInfo($user);
         $this->assertEquals($uri->getUserInfo(), $user);
     }
 
     public function testWithSchemeValidLower()
     {
         $uri = new Uri();
-        $scheme ="feed";
+        $scheme = "feed";
         $uri = $uri->withScheme($scheme);
         $this->assertEquals($uri->getScheme(), $scheme);
     }
@@ -167,7 +164,7 @@ class UriTest extends TestCase
     public function testWithSchemeValidUpper()
     {
         $uri = new Uri();
-        $scheme ="FeEd";
+        $scheme = "FeEd";
         $uri = $uri->withScheme($scheme);
         $this->assertEquals($uri->getScheme(), 'feed');
     }
@@ -175,8 +172,44 @@ class UriTest extends TestCase
     public function testWithSchemeEmpty()
     {
         $uri = new Uri();
-        $scheme ="";
+        $scheme = "";
         $uri = $uri->withScheme($scheme);
         $this->assertEquals($uri->getScheme(), null);
+    }
+
+    public function testWithAuthorityValid()
+    {
+        $uri = new Uri();
+        $host = 'groupware';
+        $user = 'test';
+        $port = '12345';
+        $uri = $uri->withHost($host);
+        $uri = $uri->withUserInfo($user);
+        $uri = $uri->withPort($port);
+        /**
+         * The authority syntax of the URI is:
+         * [user-info@]host[:port]
+         */
+        $this->assertEquals($uri->getAuthority(), 'test@groupware:12345');
+    }
+
+    public function testWithAuthorityHostEmpty()
+    {
+        $uri = new Uri();
+        $host = '';
+        $user = 'test';
+        $port = '12345';
+        $uri = $uri->withHost($host);
+        $uri = $uri->withUserInfo($user);
+        $uri = $uri->withPort($port);
+        $this->assertEquals($uri->getAuthority(), '');
+    }
+
+    public function testNullStandardPorts()
+    {
+        $uri = new Uri();
+        $port = "80";
+        $scheme = "http";
+        $this->assertEquals($uri->nullStandardPorts($scheme, $port), null);
     }
 }
