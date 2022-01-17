@@ -13,6 +13,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
+use ReflectionMethod;
 
 class UriTest extends TestCase
 {
@@ -67,7 +68,7 @@ class UriTest extends TestCase
         $port = '65536';
         $uri = new Uri();
         $uri = $uri->withPort($port);
-        $this->assertEquals($uri->getPort(), $port);
+        $this->expectException(InvalidArgumentException::class);
     }
 
     public function testWithNullPort()
@@ -156,7 +157,7 @@ class UriTest extends TestCase
     public function testWithSchemeValidLower()
     {
         $uri = new Uri();
-        $scheme = "feed";
+        $scheme = 'feed';
         $uri = $uri->withScheme($scheme);
         $this->assertEquals($uri->getScheme(), $scheme);
     }
@@ -164,7 +165,7 @@ class UriTest extends TestCase
     public function testWithSchemeValidUpper()
     {
         $uri = new Uri();
-        $scheme = "FeEd";
+        $scheme = 'FeEd';
         $uri = $uri->withScheme($scheme);
         $this->assertEquals($uri->getScheme(), 'feed');
     }
@@ -172,7 +173,7 @@ class UriTest extends TestCase
     public function testWithSchemeEmpty()
     {
         $uri = new Uri();
-        $scheme = "";
+        $scheme = '';
         $uri = $uri->withScheme($scheme);
         $this->assertEquals($uri->getScheme(), null);
     }
@@ -203,13 +204,5 @@ class UriTest extends TestCase
         $uri = $uri->withUserInfo($user);
         $uri = $uri->withPort($port);
         $this->assertEquals($uri->getAuthority(), '');
-    }
-
-    public function testNullStandardPorts()
-    {
-        $uri = new Uri();
-        $port = "80";
-        $scheme = "http";
-        $this->assertEquals($uri->nullStandardPorts($scheme, $port), null);
     }
 }
