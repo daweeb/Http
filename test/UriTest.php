@@ -14,6 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use ReflectionMethod;
+use InvalidArgumentException;
 
 class UriTest extends TestCase
 {
@@ -67,8 +68,8 @@ class UriTest extends TestCase
     {
         $port = '65536';
         $uri = new Uri();
-        $uri = $uri->withPort($port);
         $this->expectException(InvalidArgumentException::class);
+        $uri = $uri->withPort($port);
     }
 
     public function testWithNullPort()

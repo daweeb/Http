@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Horde\Http;
 
 use Horde\Util\HordeString;
+use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -364,6 +365,10 @@ class Uri implements UriInterface
      */
     public function withPort($port): self
     {
+        if($port >= 65536)
+        {
+            throw new InvalidArgumentException('Invalid Portnumber, port must be between 1 and 65535');
+        }
         $ret = clone $this;
         $ret->port = (int) $port;
 
