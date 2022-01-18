@@ -18,8 +18,11 @@ use InvalidArgumentException;
 
 class UriTest extends TestCase
 {
+    private Uri $url;
+
     public function setUp(): void
     {
+        $this->url = new Uri($url = 'http://hans:flammenwerfer@www.testsite.com:21/testpath?q=test#hashtest');
         $this->requestFactory = new RequestFactory();
     }
 
@@ -204,5 +207,54 @@ class UriTest extends TestCase
         $uri = $uri->withUserInfo($user);
         $uri = $uri->withPort($port);
         $this->assertSame($uri->getAuthority(), '');
+    }
+
+    public function testWithSchemeClone()
+    {
+        $dumy = $this->url->withScheme('feed');
+        $this->assertSame($this->url->getScheme(), 'http');
+        $this->assertSame($dumy->getScheme(), 'feed');
+    }
+
+    public function testWithUserInfoClone()
+    {
+        $dumy = $this->url->withUserInfo('test', '1234');
+        $this->assertSame($this->url->getUserInfo(), 'hans:flammenwerfer');
+        $this->assertEquals($dumy->getUserInfo(), 'test:1234');
+    }
+
+    public function testWithHostClone()
+    {
+        $dumy = $this->url->withHost('www.groupware.com');
+        $this->assertSame($this->url->getHost(), 'www.testsite.com');
+        $this->assertSame($dumy->getHost(), 'www.groupware.com');
+    }
+
+    public function testWithPortClone()
+    {
+        $dumy = $this->url->withPort(631);
+        $this->assertSame($this->url->getPort(), 21);
+        $this->assertSame($dumy->getPort(), 631);
+    }
+
+    public function testWithPathClone()
+    {
+        $dumy = $this->url->withPath('/test/path');
+        $this->assertSame($this->url->getPath(), '/testpath');
+        $this->assertSame($dumy->getPath(), '/test/path');
+    }
+
+    public function testWithQueryClone()
+    {
+        $dumy = $this->url->withQuery('s=test');
+        $this->assertSame($this->url->getQuery(), 'q=test');
+        $this->assertSame($dumy->getQuery(), 's=test');
+    }
+
+    public function testWithFragmentClone()
+    {
+        $dumy = $this->url->withFragment('cookietest');
+        $this->assertSame($this->url->getFragment(), 'hashtest');
+        $this->assertSame($dumy->getFragment(), 'cookietest');
     }
 }
