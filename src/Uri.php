@@ -340,6 +340,17 @@ class Uri implements UriInterface
      */
     public function withHost($host): self
     {
+        if ($host == null) {
+            $ret = clone $this;
+            $ret->host = '';
+
+            return $ret;
+        }
+
+        if (!filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+            throw new InvalidArgumentException('Invalid Hostname, Valid characters for hostnames are ASCII(7) letters.');
+        }
+
         $ret = clone $this;
         $ret->host = HordeString::lower($host);
 
@@ -365,10 +376,17 @@ class Uri implements UriInterface
      */
     public function withPort($port): self
     {
-        if($port >= 65536)
-        {
+        if ($port >= 65536 || $port <0) {
             throw new InvalidArgumentException('Invalid Portnumber, port must be between 1 and 65535');
         }
+
+        if ($port == null) {
+            $ret = clone $this;
+            $ret->port = null;
+
+            return $ret;
+        }
+
         $ret = clone $this;
         $ret->port = (int) $port;
 

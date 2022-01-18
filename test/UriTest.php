@@ -64,7 +64,7 @@ class UriTest extends TestCase
         $this->assertEquals($uri->getPort(), $port);
     }
 
-    public function testWithInvalidPort()
+    public function testWithInvalidPortUpper()
     {
         $port = '65536';
         $uri = new Uri();
@@ -72,12 +72,20 @@ class UriTest extends TestCase
         $uri = $uri->withPort($port);
     }
 
+    public function testWithInvalidPortLower()
+    {
+        $port = '-631';
+        $uri = new Uri();
+        $this->expectException(InvalidArgumentException::class);
+        $uri = $uri->withPort($port);
+    }
+
     public function testWithNullPort()
     {
-        $port = '';
+        $port = null;
         $uri = new Uri();
         $uri = $uri->withPort($port);
-        $this->assertEquals($uri->getPort(), null);
+        $this->assertNull($uri->getPort());
     }
 
     public function testWithValidLowerHost()
@@ -98,10 +106,10 @@ class UriTest extends TestCase
 
     public function testWithInvalidHost()
     {
-        $host = 'group@ware';
+        $host = 'group¹ware';
         $uri = new Uri();
+        $this->expectException(InvalidArgumentException::class);
         $uri = $uri->withHost($host);
-        $this->assertEquals($uri->getHost(), $host);
     }
 
     public function testWithNullHost()
@@ -109,16 +117,7 @@ class UriTest extends TestCase
         $host = '';
         $uri = new Uri();
         $uri = $uri->withHost($host);
-        $this->assertEquals($uri->getHost(), null);
-    }
-
-    public function testWithPathRemovesFragmentString()
-    {
-        $path = '/hello/world';
-        $fragment = '#print';
-        $uri = new Uri();
-        $uri = $uri->withPath($path . $fragment);
-        $this->assertEquals($uri->getPath(), $path);
+        $this->assertSame($uri->getHost(), '');
     }
 
     public function testWithfragmentString()
@@ -134,7 +133,7 @@ class UriTest extends TestCase
         $fragment = '';
         $uri = new Uri();
         $uri = $uri->withFragment($fragment);
-        $this->assertEquals($uri->getFragment(), null);
+        $this->assertSame($uri->getFragment(), '');
     }
 
     public function testWithUserInfoValid()
@@ -176,7 +175,7 @@ class UriTest extends TestCase
         $uri = new Uri();
         $scheme = '';
         $uri = $uri->withScheme($scheme);
-        $this->assertEquals($uri->getScheme(), null);
+        $this->assertSame($uri->getScheme(), '');
     }
 
     public function testWithAuthorityValid()
@@ -204,6 +203,6 @@ class UriTest extends TestCase
         $uri = $uri->withHost($host);
         $uri = $uri->withUserInfo($user);
         $uri = $uri->withPort($port);
-        $this->assertEquals($uri->getAuthority(), '');
+        $this->assertSame($uri->getAuthority(), '');
     }
 }
