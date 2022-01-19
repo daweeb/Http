@@ -340,7 +340,7 @@ class Uri implements UriInterface
      */
     public function withHost($host): self
     {
-        if ($host == null) {
+        if (!$host) {
             $ret = clone $this;
             $ret->host = '';
 
@@ -348,7 +348,7 @@ class Uri implements UriInterface
         }
 
         if (!filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
-            throw new InvalidArgumentException('Invalid Hostname, Valid characters for hostnames are ASCII(7) letters.');
+            throw new InvalidArgumentException('letters from a to z, the digits from 0 to 9,the hyphen (-), and the dot (.). A hostname may not start with a hyphen.');
         }
 
         $ret = clone $this;
@@ -376,15 +376,15 @@ class Uri implements UriInterface
      */
     public function withPort($port): self
     {
-        if ($port >= 65536 || $port <0) {
-            throw new InvalidArgumentException('Invalid Portnumber, port must be between 1 and 65535');
-        }
-
-        if ($port == null) {
+        if (is_null($port)) {
             $ret = clone $this;
             $ret->port = null;
 
             return $ret;
+        }
+
+        if ($port >= 65536 || $port <= 0) {
+            throw new InvalidArgumentException('Invalid Portnumber, port must be between 1 and 65535');
         }
 
         $ret = clone $this;

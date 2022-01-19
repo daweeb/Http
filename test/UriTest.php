@@ -67,6 +67,22 @@ class UriTest extends TestCase
         $this->assertEquals($uri->getPort(), $port);
     }
 
+    public function testWithValidPortMax()
+    {
+        $port = '65535';
+        $uri = new Uri();
+        $uri = $uri->withPort($port);
+        $this->assertEquals($uri->getPort(), $port);
+    }
+
+    public function testWithValidPortMin()
+    {
+        $port = '0';
+        $uri = new Uri();
+        $this->expectException(InvalidArgumentException::class);
+        $uri = $uri->withPort($port);
+    }
+
     public function testWithInvalidPortUpper()
     {
         $port = '65536';
@@ -107,7 +123,31 @@ class UriTest extends TestCase
         $this->assertEquals($uri->getHost(), 'groupware');
     }
 
-    public function testWithInvalidHost()
+    public function testWithValidHyphen()
+    {
+        $host = 'Group-wa-re';
+        $uri = new Uri();
+        $uri = $uri->withHost($host);
+        $this->assertSame($uri->getHost(), 'group-wa-re');
+    }
+
+    public function testWithValidDot()
+    {
+        $host = 'Group.wa.re';
+        $uri = new Uri();
+        $uri = $uri->withHost($host);
+        $this->assertSame($uri->getHost(), 'group.wa.re');
+    }
+
+    public function testWithValidHyphenAndDot()
+    {
+        $host = 'Group-wa.re';
+        $uri = new Uri();
+        $uri = $uri->withHost($host);
+        $this->assertSame($uri->getHost(), 'group-wa.re');
+    }
+
+    public function testWithInvalidHostSpecial()
     {
         $host = 'group¹ware';
         $uri = new Uri();
@@ -115,7 +155,23 @@ class UriTest extends TestCase
         $uri = $uri->withHost($host);
     }
 
-    public function testWithNullHost()
+    public function testWithInvalidHostHash()
+    {
+        $host = 'group##ware';
+        $uri = new Uri();
+        $this->expectException(InvalidArgumentException::class);
+        $uri = $uri->withHost($host);
+    }
+
+    public function testWithInvalidHostStartHyphen()
+    {
+        $host = '-groupware';
+        $uri = new Uri();
+        $this->expectException(InvalidArgumentException::class);
+        $uri = $uri->withHost($host);
+    }
+
+    public function testWithEmptyHost()
     {
         $host = '';
         $uri = new Uri();
